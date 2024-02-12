@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filterable Responsive Lightbox Gallery Tutorial</title>
+
+    <!-- magnific-popup css cdn link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css">
+
+    <!-- custom css file link  -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="gallery">
+
+    <ul class="controls">
+        <li class="buttons active" data-filter="all">Our Album</li>
+        <li class="buttons" data-filter="ice-cream">love 2021</li>
+        <li class="buttons" data-filter="chocolate">changes 2022</li>
+        <li class="buttons" data-filter="cake">Growth 2023</li>
+        <li class="buttons" data-filter="juice">Big 2024</li>
+        <li class="buttons" data-filter="sandwich">Fun</li>
+    </ul>
+
+    <div class="image-container" id="uploadedImagesContainer">
+        <!-- Images will be dynamically added here -->
+    </div>
+
+    <input type="file" id="imageInput" accept="image/*" multiple />
+    <button id="uploadButton">Upload</button>
+
+</div>
+
+<!-- jquery cdn link  -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<!-- magnific popup js cdn link  -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+
+<script>
+    $(document).ready(function(){
+
+        // Handle file input change
+        $('#imageInput').on('change', function() {
+            readURL(this);
+        });
+
+        $('.buttons').click(function(){
+            $(this).addClass('active').siblings().removeClass('active');
+
+            var filter = $(this).attr('data-filter')
+
+            if(filter == 'all'){
+                $('.image').show(400);
+            }else{
+                $('.image').hide();
+                $('.' + filter).show(400);
+            }
+        });
+
+        $('.gallery').magnificPopup({
+            delegate:'a',
+            type:'image',
+            gallery:{
+                enabled:true
+            }
+        });
+
+        $('#uploadButton').on('click', function() {
+            // Add logic to handle the selected data filter
+            var selectedFilter = $('.controls li.active').attr('data-filter');
+            
+            // Add logic to upload images with the selected data filter
+            // For now, let's just alert the filter
+            alert('Uploading images with filter: ' + selectedFilter);
+        });
+
+        $(document).on('click', '.delete-button', function() {
+            // Handle the delete button click
+            $(this).closest('.image').remove();
+        });
+
+        function readURL(input) {
+            var container = $('#uploadedImagesContainer');
+
+            if (input.files && input.files.length > 0) {
+                for (var i = 0; i < input.files.length; i++) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        var imageUrl = e.target.result;
+                        var link = $('<a>').attr('href', imageUrl).addClass('image');
+
+                        var img = $('<img>').attr('src', imageUrl).attr('alt', '');
+                        link.append(img);
+
+                        var deleteButton = $('<button>').text('Delete').addClass('delete-button');
+                        link.append(deleteButton);
+
+                        // Add data attribute indicating the category of the image
+                        var category = $('.controls li.active').attr('data-filter');
+                        link.addClass(category);
+
+                        container.append(link);
+                    };
+
+                    reader.readAsDataURL(input.files[i]);
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>
